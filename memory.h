@@ -1,3 +1,6 @@
+#ifndef MEMORY_H
+#define MEMORY_H
+
 #include "riscv.h"
 
 // Load instructions
@@ -17,3 +20,5 @@ void sw(riscv *r, uint32_t address, int32_t k, int32_t d);
 void sh(riscv *r, uint32_t address, int32_t k, int16_t d);
 
 void sb(riscv *r, uint32_t address, int32_t k, int8_t d);
+
+#endif

@@ -1,4 +1,21 @@
+#ifndef INSTRUCTIONS_H
+#define INSTRUCTIONS_H
+
 #include "riscv.h"
+
+#define F0M 0x7f
+#define F1M 0xf80
+#define F2M 0xe000
+#define F3M 0x7f
+#define F4M 0x7f
+#define F5M 0x7f
+
+#define F0S 0
+#define F1S 7
+#define F2S 12
+#define F3S 15
+#define F4S 20
+#define F5S 25
 
 typedef enum OPCODE { LUI = 0x37, AUIPC = 0x17,
 	       ILType = 0x03, BType = 0x63, JAL = 0x6F,
@@ -23,6 +40,8 @@ OPCODE get_opcode(int32_t instruction);
 
 FUNCT3 get_funct3(int32_t instruction);
 
+FUNCT7 get_funct7(int32_t instruction);
+
 // get first source register index
 uint8_t get_rs1(int32_t instruction);
 
@@ -32,13 +51,19 @@ uint8_t get_rs2(int32_t instruction);
 // get destination register index
 uint8_t get_rd(int32_t instruction);
 
+uint8_t get_shamt(int32_t instruction);
+
+uint16_t get_imm(int32_t instruction);
+
 typedef struct rtype {
   FUNCT7 f7;
-  int32_t rs2;
-  int32_t rs1;
+  uint8_t rs2;
+  uint8_t rs1;
+  uint8_t rd;
   FUNCT3 f3;
-  int32_t rd;
   OPCODE op;
 } rtype;
 
 rtype decode_rtype(int32_t instruction);
+
+#endif

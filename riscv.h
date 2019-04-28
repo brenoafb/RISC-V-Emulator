@@ -1,3 +1,6 @@
+#ifndef RISCV_H
+#define RISCV_H
+
 #include <stdio.h>
 #include <stdint.h>
 #define NREG 32
@@ -11,3 +14,5 @@ typedef struct riscv {
   int32_t gp;
   int32_t sp;
 } riscv;
+
+#endif
