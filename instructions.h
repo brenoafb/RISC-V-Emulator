@@ -4,11 +4,11 @@
 #include "riscv.h"
 
 #define F0M 0x7f
-#define F1M 0xf80
-#define F2M 0xe000
-#define F3M 0x7f
-#define F4M 0x7f
-#define F5M 0x7f
+#define F1M (0x1f << 7)
+#define F2M (0x7 << 12)
+#define F3M (0x1f << 15)
+#define F4M (0x1f << 20)
+#define F5M (0x7f << 25)
 
 #define F0S 0
 #define F1S 7

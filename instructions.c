@@ -57,13 +57,21 @@ int32_t get_imm13(int32_t instruction) {
 }
 
 int32_t get_imm20_u(int32_t instruction) {
-  // TODO
-  return 0;
+  return (instruction & (F2M + F3M + F4M)) << F2S;
 }
 
 int32_t get_imm21(int32_t instruction) {
-  // TODO
-  return 0;
+  int32_t bits1_4= (uint32_t) instruction & 0xe00000;
+  int32_t bits5_10 = (uint32_t) instruction & 0x7e000000;
+  int32_t bit11 = (uint32_t) instruction & (1 << 20);
+  int32_t bits12_19 = (uint32_t) instruction & (F2M + F3M);
+  int32_t bit20 = (uint32_t) instruction & (1 << 31);
+
+  return (bits1_4 << 1)
+       + (bits5_10 << 5)
+       + (bit11 << 11)
+       + (bits12_19 << 12)
+       + (bit20 << 20);
 }
   
 
