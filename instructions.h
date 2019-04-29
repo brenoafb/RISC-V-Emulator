@@ -53,7 +53,15 @@ uint8_t get_rd(int32_t instruction);
 
 uint8_t get_shamt(int32_t instruction);
 
-uint16_t get_imm(int32_t instruction);
+int32_t get_imm12_i(int32_t instruction);
+
+int32_t get_imm12_s(int32_t instruction);
+
+int32_t get_imm13(int32_t instruction);
+
+int32_t get_imm20_u(int32_t instruction);
+
+int32_t get_imm21(int32_t instruction);
 
 typedef struct rtype {
   FUNCT7 f7;
@@ -66,4 +74,63 @@ typedef struct rtype {
 
 rtype decode_rtype(int32_t instruction);
 
+typedef struct itype {
+  OPCODE op;
+  uint8_t rd;
+  FUNCT3 f3;
+  uint8_t rs1;
+  int32_t imm12_i;
+} itype;
+
+itype decode_itype(int32_t instruction);
+
+typedef struct isitype {
+  OPCODE op;
+  uint8_t rd;
+  FUNCT3 f3;
+  uint8_t rs1;
+  uint8_t shamt;
+  FUNCT7 f7;
+} isitype;
+
+isitype decode_isitype(int32_t instruction);
+
+
+typedef struct stype {
+  OPCODE op;
+  FUNCT3 f3;
+  uint8_t rs1;
+  uint8_t rs2;
+  int32_t imm12_s;
+} stype;
+
+stype decode_stype(int32_t instruction);
+
+typedef struct sbtype {
+  OPCODE op;
+  FUNCT3 f3;
+  uint8_t rs1;
+  uint8_t rs2;
+  int32_t imm13;
+} sbtype;
+
+sbtype decode_sbtype(int32_t instruction);
+
+typedef struct ujtype {
+  OPCODE op;
+  uint8_t rd;
+  int32_t imm21;
+} ujtype;
+
+ujtype decode_ujtype(int32_t instruction);
+
+typedef struct utype {
+  OPCODE op;
+  uint8_t rd;
+  int32_t imm20_u;
+} utype;
+
+utype decode_utype(int32_t instruction);
+
 #endif
+

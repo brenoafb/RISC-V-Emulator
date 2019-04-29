@@ -56,9 +56,16 @@ int32_t get_imm13(int32_t instruction) {
   return ((bit12 << 12) + (bit11 << 11) + (up << 5) + lo) << 1;
 }
 
-int32_t get_imm20_u(int32_t instruction);
+int32_t get_imm20_u(int32_t instruction) {
+  // TODO
+  return 0;
+}
 
-int32_t get_imm21(int32_t instruction);
+int32_t get_imm21(int32_t instruction) {
+  // TODO
+  return 0;
+}
+  
 
 rtype decode_rtype(int32_t instruction) {
   rtype rt;
@@ -67,5 +74,70 @@ rtype decode_rtype(int32_t instruction) {
   rt.op = get_opcode(instruction);
   rt.rs1 = get_rs1(instruction);
   rt.rs2 = get_rs2(instruction);
+
   return rt;
+}
+
+itype decode_itype(int32_t instruction) {
+  itype it;
+  it.op = get_opcode(instruction);
+  it.rd = get_rd(instruction);
+  it.f3 = get_funct3(instruction);
+  it.rs1 = get_rs1(instruction);
+  it.imm12_i = get_imm12_i(instruction);
+
+  return it;
+}
+
+isitype decode_isitype(int32_t instruction) {
+  isitype isit;
+  isit.op = get_opcode(instruction);
+  isit.rd = get_rd(instruction);
+  isit.f3 = get_funct3(instruction);
+  isit.rs1 = get_rs1(instruction);
+  isit.shamt = get_shamt(instruction);
+  isit.f7 = get_funct7(instruction);
+  
+  return isit;
+}
+
+stype decode_stype(int32_t instruction) {
+  stype st;
+  st.op = get_opcode(instruction);
+  st.f3 = get_funct3(instruction);
+  st.rs1 = get_rs1(instruction);
+  st.rs2 = get_rs2(instruction);
+  st.imm12_s = get_imm12_s(instruction);
+
+  return st;
+}
+
+sbtype decode_sbtype(int32_t instruction) {
+  sbtype sbt;
+  sbt.op = get_opcode(instruction);
+  sbt.f3 = get_funct3(instruction);
+  sbt.rs1 = get_rs1(instruction);
+  sbt.rs2 = get_rs2(instruction);
+  sbt.imm13 = get_imm13(instruction);
+  
+  return sbt;
+}
+
+ujtype decode_ujtype(int32_t instruction) {
+  ujtype ujt;
+  ujt.op = get_opcode(instruction);
+  ujt.rd = get_rd(instruction);
+  ujt.imm21 = get_imm21(instruction);
+
+  return ujt;
+}
+
+utype decode_utype(int32_t instruction) {
+  utype ut;
+  ut.op = get_opcode(instruction);
+  ut.rd = get_rd(instruction);
+  ut.imm20_u = get_imm20_u(instruction);
+
+  return ut;
+
 }
