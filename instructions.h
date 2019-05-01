@@ -17,18 +17,24 @@
 #define F4S 20
 #define F5S 25
 
-typedef enum OPCODE { LUI = 0x37, AUIPC = 0x17,
-	       ILType = 0x03, BType = 0x63, JAL = 0x6F,
-	       JALR = 0x67, StoreType = 0x23, ILAType = 0x13,
-	       RegType = 0x33, ECALL = 0x73
+typedef enum OPCODE {
+		     LUI = 0x37, AUIPC = 0x17,    // upper immediate instructions     (UType)
+		     ILType = 0x03,               // Load type                        (IType)
+		     BType = 0x63,                // branch                           (SBType)
+		     JAL = 0x6F, JALR = 0x67,     // jumps (jal -> uj, jalr -> i)     (UJType)
+		     StoreType = 0x23,            // store                            (SType)
+		     ILAType = 0x13,              // arithmetic logic with immediate  (IType)
+		     RegType = 0x33,              // arithmetic logic with registers  (RType)
+		     ECALL = 0x73                 // system call                      (IType)
 } OPCODE;
 
-typedef enum FUNCT3 { BEQ3=0, BNE3=01, BLT3=04, BGE3=05,
-		      BLTU3=0x06, BGEU3=07, LB3=0, LH3=01, LW3=02,
-		      LBU3=04, LHU3=05, SB3=0, SH3=01, SW3=02,
-		      ADDSUB3=0, SLL3=01, SLT3=02, STLU3=03, XOR3=04,
-		      SR3=05, OR3=06, AND3=07, ADDI3=0, ORI3=06, SLTI3=02,
-		      XORI3=04, ANDI3=07, SLTIU=03, SLLI3=01, SRI3=05
+typedef enum FUNCT3 { BEQ3=0, BNE3=01, BLT3=04, BGE3=05, BLTU3=0x06, BGEU3=07,    // branches 
+		      LB3=0, LH3=01, LW3=02, LBU3=04, LHU3=05,                    // loads
+		      SB3=0, SH3=01, SW3=02,                                      // stores
+		      ADDSUB3=0, SLL3=01, SLT3=02, STLU3=03,                      // arithmetic logic w/
+		      XOR3=04, SR3=05, OR3=06, AND3=07,                           // registers
+		      ADDI3=0, ORI3=06, SLTI3=02, XORI3=04, ANDI3=07,             // arithmetic logic w/
+		      SLTIU=03, SLLI3=01, SRI3=05                                 // immediate
 } FUNCT3;
 
 typedef enum FUNCT7 {
@@ -63,74 +69,24 @@ int32_t get_imm20_u(int32_t instruction);
 
 int32_t get_imm21(int32_t instruction);
 
-typedef struct rtype {
+typedef struct ifields {
+  OPCODE op;
+  FUNCT3 f3;
   FUNCT7 f7;
+  
+  uint8_t rd;
+  uint8_t rs1;
   uint8_t rs2;
-  uint8_t rs1;
-  uint8_t rd;
-  FUNCT3 f3;
-  OPCODE op;
-} rtype;
-
-rtype decode_rtype(int32_t instruction);
-
-typedef struct itype {
-  OPCODE op;
-  uint8_t rd;
-  FUNCT3 f3;
-  uint8_t rs1;
-  int32_t imm12_i;
-} itype;
-
-itype decode_itype(int32_t instruction);
-
-typedef struct isitype {
-  OPCODE op;
-  uint8_t rd;
-  FUNCT3 f3;
-  uint8_t rs1;
+  
   uint8_t shamt;
-  FUNCT7 f7;
-} isitype;
-
-isitype decode_isitype(int32_t instruction);
-
-
-typedef struct stype {
-  OPCODE op;
-  FUNCT3 f3;
-  uint8_t rs1;
-  uint8_t rs2;
+  int32_t imm12_i;
   int32_t imm12_s;
-} stype;
-
-stype decode_stype(int32_t instruction);
-
-typedef struct sbtype {
-  OPCODE op;
-  FUNCT3 f3;
-  uint8_t rs1;
-  uint8_t rs2;
   int32_t imm13;
-} sbtype;
-
-sbtype decode_sbtype(int32_t instruction);
-
-typedef struct ujtype {
-  OPCODE op;
-  uint8_t rd;
-  int32_t imm21;
-} ujtype;
-
-ujtype decode_ujtype(int32_t instruction);
-
-typedef struct utype {
-  OPCODE op;
-  uint8_t rd;
   int32_t imm20_u;
-} utype;
+  int32_t imm21;
+} ifields;
 
-utype decode_utype(int32_t instruction);
+ifields decode_instruction(int32_t instruction);
 
 #endif
 
