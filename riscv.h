@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "instructions.h"
+#include "signatures.h"
 #define NREG 32
 #define MEMSIZE 4096
 
@@ -40,7 +41,7 @@ void and(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
 
 void andi(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i);
 
-void auipc(riscv *r, uint8_t rd, int32_t imm20_i);
+void auipc(riscv *r, uint8_t rd, int32_t imm20_u);
 
 void beq(riscv *r, uint8_t rs1, uint8_t rs2, int32_t offset);
 
@@ -60,7 +61,7 @@ void jal(riscv *r, uint8_t rd, int32_t offset);
 
 void jalr(riscv *r, uint8_t rd, uint8_t rs1);
 
-void lui(riscv *r, uint8_t rd, int32_t imm20_i);
+void lui(riscv *r, uint8_t rd, int32_t imm20_u);
 
 void or(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
 
@@ -83,5 +84,27 @@ void sub(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
 void xor(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
 
 void xori(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i);
+
+void slti(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i);
+
+void sltiu(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i);
+
+// Load instructions
+int32_t lw(riscv *r, uint32_t address, int32_t k);
+
+int32_t lh(riscv *r, uint32_t address, int32_t k);
+
+int32_t lhu(riscv *r, uint32_t address, int32_t k);
+
+int32_t lb(riscv *r, uint32_t address, int32_t k);
+
+int32_t lbu(riscv *r, uint32_t address, int32_t k);
+
+// Store instructions
+void sw(riscv *r, uint32_t address, int32_t k, int32_t d);
+
+void sh(riscv *r, uint32_t address, int32_t k, int16_t d);
+
+void sb(riscv *r, uint32_t address, int32_t k, int8_t d);
 
 #endif

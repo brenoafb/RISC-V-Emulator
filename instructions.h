@@ -88,4 +88,8 @@ typedef struct ifields {
 
 ifields decode_instruction(int32_t instruction);
 
+// Generate a signature based on op, f3, and f7 fields.
+// Useful for checking which operations the instruction encodes.
+uint64_t signature(ifields i);
+
 #endif

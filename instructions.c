@@ -94,3 +94,9 @@ ifields decode_instruction(int32_t instruction) {
   
   return i;
 }
+
+uint64_t signature(ifields i) {
+  return i.op
+    + (i.f3 << 7)
+    + (i.f7 << 15);
+}
