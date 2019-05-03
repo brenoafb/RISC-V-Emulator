@@ -74,7 +74,7 @@ int32_t get_imm21(int32_t instruction) {
        + (bit20 << 20);
 }
 
-ifields decode_instr(int32_t instruction) {
+ifields decode_instruction(int32_t instruction) {
   ifields i;
 
   i.op = get_opcode(instruction);

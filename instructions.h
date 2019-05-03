@@ -89,4 +89,3 @@ typedef struct ifields {
 ifields decode_instruction(int32_t instruction);
 
 #endif
-

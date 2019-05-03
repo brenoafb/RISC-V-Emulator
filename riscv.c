@@ -145,5 +145,3 @@ void xor(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2) {
 void xori(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i) {
   r->breg[rd] = r->breg[rs1] ^ sext(imm12_i, 12);
 }
-
-#endif

@@ -21,7 +21,12 @@ int main(int argc, char *argv[]) {
 
   char *filename = argv[1];
 
-  read_file(filename);
+  printf("|ifield| = %lu\n", sizeof(ifields));
+  printf("|OPCODE| = %lu\n", sizeof(OPCODE));
+  printf("|FUNCT3| = %lu\n", sizeof(FUNCT3));
+  printf("|FUNCT7| = %lu\n", sizeof(FUNCT7));
+  
+  // read_file(filename);
   
   return 0;
 }

@@ -1,4 +1,5 @@
 #ifndef RISCV_H
+
 #define RISCV_H
 
 #include <stdio.h>
@@ -19,13 +20,17 @@ typedef struct riscv {
 
 void riscv_init(riscv *r);
 
-void riscv_init_text(riscv *r, int32_t *data);
+void riscv_init_data(riscv *r, int32_t *data);
 
 void fetch(riscv *r, int32_t *text);
 
-ifields decode(riscv *r);
+struct ifields decode(riscv *r);
 
-void execute(riscv *r, ifields i);
+// sign extension function
+// b: input number of bits
+int32_t sext(uint32_t input, uint8_t b);
+
+void execute(riscv *r, struct ifields i);
 
 void add(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
 
@@ -78,4 +83,5 @@ void sub(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
 void xor(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
 
 void xori(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i);
+
 #endif
