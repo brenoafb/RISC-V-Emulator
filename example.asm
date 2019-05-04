@@ -1,5 +1,5 @@
 .data
-primos:	.word 1, 3, 5, 6, 11, 13, 17, 19
+primos:	.word 1, 3, 5, 7, 11, 13, 17, 19
 size:	.word 8
 msg:	.asciz "Os oito primeiros numeros primos sao: "
 space:	.ascii " "
@@ -9,6 +9,7 @@ space:	.ascii " "
 	la t1, size		# carrega endereço de size
 	lw t1, 0(t1)		# carrega size em t1
 	li a7, 4		# imprime mensagem inicial
+	la a0, msg
 	ecall
 
 loop:	beq t1, zero, exit	# se processou todo o array, encerra

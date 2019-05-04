@@ -4,11 +4,13 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include "instructions.h"
-#include "signatures.h"
 #define NREG 32
 #define MEMSIZE 4096
+#define MEMSTART 0x2000
+#define VERBOSE 0
 
 typedef struct riscv {
   int32_t mem[MEMSIZE];
@@ -32,6 +34,16 @@ struct ifields decode(riscv *r);
 int32_t sext(uint32_t input, uint8_t b);
 
 void execute(riscv *r, struct ifields i);
+
+void iltype(riscv *r, struct ifields i);
+
+void btype(riscv *r, struct ifields i);
+
+void storetype(riscv *r, struct ifields i);
+
+void ilatype(riscv *r, struct ifields i);
+
+void regtype(riscv *r, struct ifields i);
 
 void add(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
 
@@ -59,7 +71,7 @@ void ecall(riscv *r);
 
 void jal(riscv *r, uint8_t rd, int32_t offset);
 
-void jalr(riscv *r, uint8_t rd, uint8_t rs1);
+void jalr(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i);
 
 void lui(riscv *r, uint8_t rd, int32_t imm20_u);
 
@@ -84,6 +96,10 @@ void sub(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
 void xor(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
 
 void xori(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i);
+
+void slt(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
+
+void sltu(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
 
 void slti(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i);
 

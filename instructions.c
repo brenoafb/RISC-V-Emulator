@@ -48,12 +48,12 @@ int32_t get_imm12_s(int32_t instruction) {
 }
 
 int32_t get_imm13(int32_t instruction) {
-  int32_t bit11 = (instruction & (1 << 7)) >> 7;      // bit 7 of instruction
-  int32_t bit12 = (instruction & (1 << 31)) >> 31;    // bit 31 of instruction
-  int32_t lo = (instruction & (0xf << 8)) >> 8;       // bits 8 through 11
-  int32_t up = (instruction & (0x3f << 25)) >> 25;    // bits 25 through 30
+  int32_t bit11 = (instruction & (1 << 7)) >> 7; 
+  int32_t bit12 = (instruction & (1 << 31)) >> 31;
+  int32_t lo = (instruction & (0xf << 8)) >> 8;    
+  int32_t up = (instruction & (0x3f << 25)) >> 25;
 
-  return (bit12 << 11) + (bit11 << 10) + (up << 4) + lo;
+  return (bit12 << 12) + (bit11 << 11) + (up << 5) + (lo << 1);
 }
 
 int32_t get_imm20_u(int32_t instruction) {
@@ -61,14 +61,12 @@ int32_t get_imm20_u(int32_t instruction) {
 }
 
 int32_t get_imm21(int32_t instruction) {
-  int32_t bits1_4= (uint32_t) instruction & 0xe00000;
-  int32_t bits5_10 = (uint32_t) instruction & 0x7e000000;
-  int32_t bit11 = (uint32_t) instruction & (1 << 20);
-  int32_t bits12_19 = (uint32_t) instruction & (F2M + F3M);
-  int32_t bit20 = (uint32_t) instruction & (1 << 31);
+  uint32_t bits1_10 = (uint32_t)  (instruction & 0x7fe00000) >> (uint32_t) 21;
+  uint32_t bits12_19 = (uint32_t) (instruction & 0x000ff000) >> (uint32_t) 12;
+  uint32_t bit11 = (uint32_t)     (instruction & 0x00100000) >> (uint32_t) 20;
+  uint32_t bit20 = (uint32_t)     (instruction & 0x80000000) >> (uint32_t) 31;
 
-  return (bits1_4 << 1)
-       + (bits5_10 << 5)
+  return (bits1_10 << 1)
        + (bit11 << 11)
        + (bits12_19 << 12)
        + (bit20 << 20);
@@ -98,5 +96,5 @@ ifields decode_instruction(int32_t instruction) {
 uint64_t signature(ifields i) {
   return i.op
     + (i.f3 << 7)
-    + (i.f7 << 15);
+    + (i.f7 << 10);
 }
