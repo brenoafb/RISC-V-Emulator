@@ -57,7 +57,7 @@ int32_t get_imm13(int32_t instruction) {
 }
 
 int32_t get_imm20_u(int32_t instruction) {
-  return (instruction & (F2M + F3M + F4M)) >> F2S;
+  return (instruction & (0xfffff000)) >> 12;
 }
 
 int32_t get_imm21(int32_t instruction) {

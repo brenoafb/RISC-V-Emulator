@@ -11,6 +11,7 @@
 #define MEMSIZE 4096
 #define MEMSTART 0x2000
 #define VERBOSE 0
+#define DUMP 0
 
 typedef struct riscv {
   int32_t mem[MEMSIZE];
@@ -24,6 +25,10 @@ typedef struct riscv {
 void riscv_init(riscv *r);
 
 void riscv_init_data(riscv *r, int32_t *data);
+
+void riscv_exit(riscv *r, int exit_code);
+
+void dump_mem(riscv *r, uint32_t addr, uint32_t wsize);
 
 void fetch(riscv *r, int32_t *text);
 

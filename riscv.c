@@ -16,6 +16,17 @@ void riscv_init_data(riscv *r, int32_t *data) {
   memcpy(r->mem, data, MEMSIZE * sizeof(int32_t));
 }
 
+void riscv_exit(riscv *r, int exit_code) {
+  if (DUMP) dump_mem(r, 0, MEMSIZE);
+  exit(exit_code);
+}
+
+void dump_mem(riscv *r, uint32_t addr, uint32_t wsize) {
+  for (uint32_t i = 0; i < wsize; i++) {
+    printf("mem[0x%08x] = 0x%08x\n", (addr+i) << 2, r->mem[addr+i]);
+  }
+}
+
 void fetch(riscv *r, int32_t *text) {
   if (!r || !text) return;
   r->ri = text[r->pc >> 2];
@@ -27,6 +38,7 @@ ifields decode(riscv *r) {
 }
 
 int32_t sext(uint32_t input, uint8_t b) {
+  if (input & 0x8000000) return input;
   int32_t m = 1U << (b - 1);  
   return (input ^ m) - m;
 }
@@ -108,7 +120,8 @@ void ecall(riscv *r) {
     break;
   case 10:
     // exit
-    exit(0);
+    riscv_exit(r, 0);
+    break;
   default:
     printf("ECALL error (%d)\n", r->breg[7]);
     break;
@@ -119,7 +132,7 @@ void ecall(riscv *r) {
 void jal(riscv *r, uint8_t rd, int32_t offset) {
   r->breg[rd] = r->pc;
   r->pc += sext(offset, 21) - 4;
-  if (VERBOSE) printf("jal x%d, 0x%x", rd, offset);
+  if (VERBOSE) printf("jal x%d, 0x%x\n", rd, offset);
 }
 
 void jalr(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i) {
@@ -127,12 +140,13 @@ void jalr(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i) {
   int32_t offset = sext(imm12_i, 12);
   r->pc = (r->breg[rs1] + offset) & ~1;
   r->breg[rd] = t;
-  if (VERBOSE) printf("jalr x%d, x%d", rd, rs1);
+  if (VERBOSE) printf("jalr x%d, x%d\n", rd, rs1);
 }
 
 void lui(riscv *r, uint8_t rd, int32_t imm20_u) {
   r->breg[rd] = sext(imm20_u, 20) << 12;
-  if (VERBOSE) printf("lui x%d, 0x%x", rd, imm20_u);
+  // r->breg[rd] = imm20_u << 12;
+  if (VERBOSE) printf("lui x%d, 0x%x\n", rd, imm20_u);
 }
 
 void or(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2) {
@@ -152,7 +166,7 @@ void sll(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2) {
 
 void slli(riscv *r, uint8_t rd, uint8_t rs1, uint8_t shamt) {
   r->breg[rd] = r->breg[rs1] << shamt;
-  if (VERBOSE) printf("sll x%d, x%d, 0x%x\n", rd, rs1, shamt);
+  if (VERBOSE) printf("slli x%d, x%d, 0x%x\n", rd, rs1, shamt);
 }
 
 void sra(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2) {
@@ -290,13 +304,13 @@ void btype(riscv *r, struct ifields i) {
     blt(r, i.rs1, i.rs2, i.imm13);
     break;
   case BGE3:
-    blt(r, i.rs1, i.rs2, i.imm13);
+    bge(r, i.rs1, i.rs2, i.imm13);
     break;
   case BLTU3:
-    blt(r, i.rs1, i.rs2, i.imm13);
+    bltu(r, i.rs1, i.rs2, i.imm13);
     break;
   case BGEU3:
-    bltu(r, i.rs1, i.rs2, i.imm13);
+    bgeu(r, i.rs1, i.rs2, i.imm13);
     break;
   default:
     printf("Unknown BType f3: 0x%x\n", i.f3);
@@ -307,15 +321,15 @@ void storetype(riscv *r, struct ifields i) {
   switch (i.f3) {
   case SB3:
     if (VERBOSE) printf("sb x%d, 0x%x(x%d)\n", i.rs1, i.imm12_i, i.rs2);
-    sb(r, r->breg[i.rs1], i.imm12_i, r->breg[i.rs2]);
+    sb(r, r->breg[i.rs1], sext(i.imm12_s, 12), r->breg[i.rs2]);
     break;
   case SH3:
     if (VERBOSE) printf("sh x%d, 0x%x(x%d)\n", i.rs1, i.imm12_i, i.rs2);
-    sh(r, r->breg[i.rs1], i.imm12_i, r->breg[i.rs2]);
+    sh(r, r->breg[i.rs1], sext(i.imm12_s, 12), r->breg[i.rs2]);
     break;
   case SW3:
     if (VERBOSE) printf("sw x%d, 0x%x(x%d)\n", i.rs1, i.imm12_i, i.rs2);
-    sw(r, r->breg[i.rs1], i.imm12_i, r->breg[i.rs2]);
+    sw(r, r->breg[i.rs1], sext(i.imm12_s, 12), r->breg[i.rs2]);
     break;
   default:
     printf("Unknown StoreType f3: 0x%x\n", i.f3);
@@ -341,7 +355,7 @@ void ilatype(riscv *r, struct ifields i) {
     andi(r, i.rd, i.rs1, i.imm12_i);
     break;
   case SLTIU:
-    slti(r, i.rd, i.rs1, i.imm12_i);
+    sltiu(r, i.rd, i.rs1, i.imm12_i);
     break;
   case SLLI3:
     slli(r, i.rd, i.rs1, i.imm12_i);
@@ -349,13 +363,16 @@ void ilatype(riscv *r, struct ifields i) {
   case SRI3:
     switch (i.f7) {
     case SRLI7:
+      srli(r, i.rd, i.rs1, i.imm12_i);
       break;
     case SRAI7:
       srai(r, i.rd, i.rs1, i.imm12_i);
       break;
     default:
       printf("Unknown ILAType f3, f7: 0x%x, 0x%x\n", i.f3, i.f7);
+      break;
     }
+    break;
   default:
     printf("Unknown ILAType f3: 0x%x\n", i.f3);
     break;

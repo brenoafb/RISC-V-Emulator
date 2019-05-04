@@ -11,6 +11,7 @@ void print_riscv(riscv *r) {
     if (i % 4 == 3) printf("\n");
     else            printf(" | ");
   }
+  printf("pc\tx%08x\n", r->pc);
 }
 
 void read_file(char *filename, int32_t arr[], size_t size) {
@@ -20,7 +21,7 @@ void read_file(char *filename, int32_t arr[], size_t size) {
     return;
   }
 
-  fread(arr, sizeof(int32_t), MEMSIZE, file);
+  fread(arr, sizeof(int32_t), size, file);
 }
 
 int main(int argc, char *argv[]) {
@@ -40,7 +41,7 @@ int main(int argc, char *argv[]) {
   
   riscv r;
   riscv_init_data(&r, data);
-
+  
   char buffer[BUFSIZE];
   for (int i = 0; i < MEMSIZE; i++) {
     if (VERBOSE) print_riscv(&r);
@@ -50,6 +51,6 @@ int main(int argc, char *argv[]) {
     r.breg[0] = 0;
     if (VERBOSE) scanf("%s", buffer);
   }
-   
+
   return 0;
 }
