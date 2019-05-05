@@ -10,6 +10,7 @@
 #define NREG 32
 #define MEMSIZE 4096
 #define MEMSTART 0x2000
+#define BUFSIZE 128
 #define VERBOSE 0
 #define DUMP 0
 
@@ -30,9 +31,13 @@ void riscv_exit(riscv *r, int exit_code);
 
 void dump_mem(riscv *r, uint32_t addr, uint32_t wsize);
 
+void dump_reg(riscv *r, int decimal);
+
 void fetch(riscv *r, int32_t *text);
 
 struct ifields decode(riscv *r);
+
+void cycle(riscv *r, int32_t *text);
 
 // sign extension function
 // b: input number of bits

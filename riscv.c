@@ -27,6 +27,19 @@ void dump_mem(riscv *r, uint32_t addr, uint32_t wsize) {
   }
 }
 
+void dump_reg(riscv *r, int decimal) {
+  for (int i = 0; i < 32; i++) {
+    if (decimal) {
+      printf("x%02d\t%d", i, r->breg[i]);
+    } else {
+      printf("x%02d\t0x%08x", i, r->breg[i]);
+    }
+    if (i % 4 == 3) printf("\n");
+    else            printf(" | ");
+  }
+  printf("pc\tx%08x\n", r->pc);
+}
+
 void fetch(riscv *r, int32_t *text) {
   if (!r || !text) return;
   r->ri = text[r->pc >> 2];
@@ -35,6 +48,16 @@ void fetch(riscv *r, int32_t *text) {
 
 ifields decode(riscv *r) {
   return decode_instruction(r->ri);
+}
+
+void cycle(riscv *r, int32_t *text) {
+  char buffer[BUFSIZE];
+  if (VERBOSE) dump_reg(r, 0);
+  fetch(r, text);
+  ifields f = decode(r);
+  execute(r, f);
+  r->breg[0] = 0;
+  if (VERBOSE) scanf("%s", buffer);
 }
 
 int32_t sext(uint32_t input, uint8_t b) {

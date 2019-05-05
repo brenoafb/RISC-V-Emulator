@@ -3,7 +3,6 @@
 #include "riscv.h"
 #include "instructions.h"
 
-#define BUFSIZE 128
 
 void print_riscv(riscv *r) {
   for (int i = 0; i < 32; i++) {
@@ -42,14 +41,8 @@ int main(int argc, char *argv[]) {
   riscv r;
   riscv_init_data(&r, data);
   
-  char buffer[BUFSIZE];
   for (int i = 0; i < MEMSIZE; i++) {
-    if (VERBOSE) print_riscv(&r);
-    fetch(&r, text);
-    ifields f = decode(&r);
-    execute(&r, f);
-    r.breg[0] = 0;
-    if (VERBOSE) scanf("%s", buffer);
+    cycle(&r, text);
   }
 
   return 0;
