@@ -3,16 +3,6 @@
 #include "riscv.h"
 #include "instructions.h"
 
-
-void print_riscv(riscv *r) {
-  for (int i = 0; i < 32; i++) {
-    printf("x%02d\t0x%08x", i, r->breg[i]);
-    if (i % 4 == 3) printf("\n");
-    else            printf(" | ");
-  }
-  printf("pc\tx%08x\n", r->pc);
-}
-
 void read_file(char *filename, int32_t arr[], size_t size) {
   FILE *file = fopen(filename, "rb");
   if (!file) {
