@@ -9,7 +9,7 @@
 #define NREG 32
 #define MEMSIZE 0x8000
 #define DATASTART 0x2000
-#define VERBOSE 1
+#define VERBOSE 0
 #define DUMP 0
 
 typedef struct riscv {
@@ -35,7 +35,7 @@ void fetch(riscv *r);
 
 struct ifields decode(riscv *r);
 
-void cycle(riscv *r);
+int cycle(riscv *r);
 
 // sign extension function
 // b: input number of bits

@@ -53,15 +53,19 @@ ifields decode(riscv *r) {
   return decode_instruction(r->ri);
 }
 
-void cycle(riscv *r) {
+int cycle(riscv *r) {
   if (VERBOSE) dump_reg(r, 0);
   if (VERBOSE) printf("pc\t0x%08x\n", r->pc);
   if (VERBOSE) printf("ir\t0x%08x\n", r->ri);
   fetch(r);
+  if (r->ri == 0) {
+    return 0;
+  }
   ifields f = decode(r);
   execute(r, f);
   r->breg[0] = 0;
   if (VERBOSE) getc(stdin);
+  return 1;
 }
 
 int32_t sext(uint32_t input, uint8_t b) {

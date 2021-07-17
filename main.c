@@ -44,9 +44,7 @@ int main(int argc, char *argv[]) {
   riscv r;
   riscv_init_text_data(&r, text, text_size, data, data_size);
 
-  for (int i = 0; i < text_size; i++) {
-    cycle(&r);
-  }
+  while (cycle(&r));
 
   return 0;
 }
