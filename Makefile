@@ -3,13 +3,13 @@ CFLAGS=-g -Wall -Wextra
 DEGS=instructions.h riscv.h
 OBJ=instructions.o riscv.o
 
+all: main.out
+
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-main.out: $(OBJ)
-	$(CC) -o $@ main.c $^ $(CFLAGS)
-
-all: main
+main.out: main.c $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS)
 
 .PHONY: clean
 
