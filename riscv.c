@@ -9,7 +9,7 @@ void riscv_init(riscv *r) {
   r->gp = 0x1800;
 }
 
-void riscv_init_text_data(riscv *r, int32_t *text, size_t text_size, int32_t *data, size_t data_size) {
+void riscv_init_text_data(riscv *r, char *text, size_t text_size, char *data, size_t data_size) {
   if (!r) return;
   riscv_init(r);
   memcpy(r->mem, text, text_size);
@@ -41,12 +41,11 @@ void dump_reg(riscv *r, int decimal) {
     if (i % 4 == 3) printf("\n");
     else            printf(" | ");
   }
-  printf("pc\tx%08x\n", r->pc);
 }
 
-void fetch(riscv *r, int32_t *text) {
-  if (!r || !text) return;
-  r->ri = text[r->pc >> 2];
+void fetch(riscv *r) {
+  if (!r) return;
+  r->ri = ((uint32_t *) r->mem)[r->pc >> 2];
   r->pc += 4;
 }
 
@@ -54,14 +53,15 @@ ifields decode(riscv *r) {
   return decode_instruction(r->ri);
 }
 
-void cycle(riscv *r, int32_t *text) {
-  char buffer[BUFSIZE];
+void cycle(riscv *r) {
   if (VERBOSE) dump_reg(r, 0);
-  fetch(r, text);
+  if (VERBOSE) printf("pc\t0x%08x\n", r->pc);
+  if (VERBOSE) printf("ir\t0x%08x\n", r->ri);
+  fetch(r);
   ifields f = decode(r);
   execute(r, f);
   r->breg[0] = 0;
-  if (VERBOSE) scanf("%s", buffer);
+  if (VERBOSE) getc(stdin);
 }
 
 int32_t sext(uint32_t input, uint8_t b) {
@@ -143,10 +143,11 @@ void ecall(riscv *r) {
     break;
   case 4:
     // print string at a0 = x10
-    printf("%s", ((char *) r->mem) + r->breg[10]); // address is in bytes
+    printf("%s", (char *) &(r->mem[r->breg[10]])); // address is in bytes
     break;
   case 10:
     // exit
+    printf("exit syscall\n");
     riscv_exit(r, 0);
     break;
   default:
@@ -253,41 +254,51 @@ void sltiu(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i) {
 }
 
 int32_t lw(riscv *r, uint32_t address, int32_t k) {
-  return r->mem[(address + k) >> 2];
+  int32_t *arr = (int32_t *) r->mem;
+  size_t addr = (address + k) >> 2;
+  return arr[addr];
 }
 
 int32_t lh(riscv *r, uint32_t address, int32_t k) {
   int16_t *arr = (int16_t *) r->mem;
-  return arr[(address+k) >> 1];
+  size_t addr = (address + k) >> 1;
+  return arr[addr];
 }
 
 int32_t lhu(riscv *r, uint32_t address, int32_t k) {
   uint16_t *arr = (uint16_t *) r->mem;
-  return arr[(address+k) >> 1];
+  size_t addr = (address + k) >> 1;
+  return arr[addr];
 }
 
 int32_t lb(riscv *r, uint32_t address, int32_t k) {
   int8_t *arr = (int8_t *) r->mem;
-  return arr[address+k];
+  size_t addr = (address + k);
+  return arr[addr];
 }
 
 int32_t lbu(riscv *r, uint32_t address, int32_t k) {
   uint8_t *arr = (uint8_t *) r->mem;
-  return arr[address+k];
+  size_t addr = (address + k);
+  return arr[addr];
 }
 
 void sw(riscv *r, uint32_t address, int32_t k, int32_t d) {
-  r->mem[(address+k) >> 2] = d;
+  int32_t *arr = (int32_t *) r->mem;
+  size_t addr = (address + k) >> 2;
+  arr[addr] = d;
 }
 
 void sh(riscv *r, uint32_t address, int32_t k, int16_t d) {
   int16_t *arr = (int16_t *) r->mem;
-  arr[(address+k) >> 1] = d;
+  size_t addr = (address + k) >> 1;
+  arr[addr] = d;
 }
 
 void sb(riscv *r, uint32_t address, int32_t k, int8_t d) {
   int8_t *arr = (int8_t *) r->mem;
-  arr[address+k] = d;
+  size_t addr = (address + k);
+  arr[addr] = d;
 }
 
 void iltype(riscv *r, struct ifields i) {

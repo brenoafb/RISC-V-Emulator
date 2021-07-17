@@ -9,12 +9,11 @@
 #define NREG 32
 #define MEMSIZE 0x8000
 #define DATASTART 0x2000
-#define BUFSIZE 128
-#define VERBOSE 0
-#define DUMP 1
+#define VERBOSE 1
+#define DUMP 0
 
 typedef struct riscv {
-  int32_t mem[MEMSIZE];
+  uint8_t mem[MEMSIZE];
   int32_t breg[NREG];
   uint32_t pc;
   uint32_t ri;
@@ -24,7 +23,7 @@ typedef struct riscv {
 
 void riscv_init(riscv *r);
 
-void riscv_init_text_data(riscv *r, int32_t *text, size_t text_size, int32_t *data, size_t data_size);
+void riscv_init_text_data(riscv *r, char *text, size_t text_size, char *data, size_t data_size);
 
 void riscv_exit(riscv *r, int exit_code);
 
@@ -32,11 +31,11 @@ void dump_mem(riscv *r, uint32_t addr, uint32_t wsize);
 
 void dump_reg(riscv *r, int decimal);
 
-void fetch(riscv *r, int32_t *text);
+void fetch(riscv *r);
 
 struct ifields decode(riscv *r);
 
-void cycle(riscv *r, int32_t *text);
+void cycle(riscv *r);
 
 // sign extension function
 // b: input number of bits
