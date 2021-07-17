@@ -9,21 +9,25 @@ void riscv_init(riscv *r) {
   r->gp = 0x1800;
 }
 
-void riscv_init_data(riscv *r, int32_t *data) {
+void riscv_init_text_data(riscv *r, int32_t *text, size_t text_size, int32_t *data, size_t data_size) {
   if (!r) return;
-
   riscv_init(r);
-  memcpy(r->mem, data, MEMSIZE * sizeof(int32_t));
+  memcpy(r->mem, text, text_size);
+  memcpy(r->mem + DATASTART, data, data_size);
 }
 
 void riscv_exit(riscv *r, int exit_code) {
-  if (DUMP) dump_mem(r, 0, MEMSIZE);
+  if (DUMP) {
+    dump_reg(r, 0);
+    printf("\n");
+    dump_mem(r, 0, MEMSIZE);
+  }
   exit(exit_code);
 }
 
 void dump_mem(riscv *r, uint32_t addr, uint32_t wsize) {
   for (uint32_t i = 0; i < wsize; i++) {
-    printf("mem[0x%08x] = 0x%08x\n", (addr+i) << 2, r->mem[addr+i]);
+    printf("0x%08x\t0x%08x\n", (addr+i) << 2, r->mem[addr+i]);
   }
 }
 
@@ -62,7 +66,7 @@ void cycle(riscv *r, int32_t *text) {
 
 int32_t sext(uint32_t input, uint8_t b) {
   if (input & 0x8000000) return input;
-  int32_t m = 1U << (b - 1);  
+  int32_t m = 1U << (b - 1);
   return (input ^ m) - m;
 }
 
@@ -139,7 +143,7 @@ void ecall(riscv *r) {
     break;
   case 4:
     // print string at a0 = x10
-    printf("%s", ((char *) r->mem) + r->breg[10] - MEMSTART); // address is in bytes
+    printf("%s", ((char *) r->mem) + r->breg[10]); // address is in bytes
     break;
   case 10:
     // exit
@@ -249,41 +253,41 @@ void sltiu(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i) {
 }
 
 int32_t lw(riscv *r, uint32_t address, int32_t k) {
-  return r->mem[(address + k - MEMSTART) >> 2];
+  return r->mem[(address + k) >> 2];
 }
 
 int32_t lh(riscv *r, uint32_t address, int32_t k) {
   int16_t *arr = (int16_t *) r->mem;
-  return arr[(address+k - MEMSTART) >> 1];
+  return arr[(address+k) >> 1];
 }
 
 int32_t lhu(riscv *r, uint32_t address, int32_t k) {
   uint16_t *arr = (uint16_t *) r->mem;
-  return arr[(address+k - MEMSTART) >> 1];
+  return arr[(address+k) >> 1];
 }
 
 int32_t lb(riscv *r, uint32_t address, int32_t k) {
   int8_t *arr = (int8_t *) r->mem;
-  return arr[address+k - MEMSTART];
+  return arr[address+k];
 }
 
 int32_t lbu(riscv *r, uint32_t address, int32_t k) {
   uint8_t *arr = (uint8_t *) r->mem;
-  return arr[address+k - MEMSTART];
+  return arr[address+k];
 }
 
 void sw(riscv *r, uint32_t address, int32_t k, int32_t d) {
-  r->mem[(address+k - MEMSTART) >> 2] = d;
+  r->mem[(address+k) >> 2] = d;
 }
 
 void sh(riscv *r, uint32_t address, int32_t k, int16_t d) {
   int16_t *arr = (int16_t *) r->mem;
-  arr[(address+k - MEMSTART) >> 1] = d;
+  arr[(address+k) >> 1] = d;
 }
 
 void sb(riscv *r, uint32_t address, int32_t k, int8_t d) {
   int8_t *arr = (int8_t *) r->mem;
-  arr[address+k - MEMSTART] = d;
+  arr[address+k] = d;
 }
 
 void iltype(riscv *r, struct ifields i) {
@@ -467,7 +471,7 @@ void execute(riscv *r, ifields i) {
   case JAL:
     jal(r, i.rd, i.imm21);
     break;
-  case JALR: 
+  case JALR:
     jalr(r, i.rd, i.rs1, i.imm12_i);
     break;
   case StoreType:

@@ -1,5 +1,4 @@
 #ifndef RISCV_H
-
 #define RISCV_H
 
 #include <stdio.h>
@@ -8,11 +7,11 @@
 #include <string.h>
 #include "instructions.h"
 #define NREG 32
-#define MEMSIZE 4096
-#define MEMSTART 0x2000
+#define MEMSIZE 0x8000
+#define DATASTART 0x2000
 #define BUFSIZE 128
 #define VERBOSE 0
-#define DUMP 0
+#define DUMP 1
 
 typedef struct riscv {
   int32_t mem[MEMSIZE];
@@ -25,7 +24,7 @@ typedef struct riscv {
 
 void riscv_init(riscv *r);
 
-void riscv_init_data(riscv *r, int32_t *data);
+void riscv_init_text_data(riscv *r, int32_t *text, size_t text_size, int32_t *data, size_t data_size);
 
 void riscv_exit(riscv *r, int exit_code);
 

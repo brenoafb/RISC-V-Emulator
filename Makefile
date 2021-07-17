@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-I. -Wall -Wextra
+CFLAGS=-g -Wall -Wextra
 DEGS=instructions.h riscv.h
 OBJ=instructions.o riscv.o
 
@@ -14,4 +14,4 @@ all: main
 .PHONY: clean
 
 clean:
-	rm -f *.o
+	rm -f *.o *.out
