@@ -9,8 +9,8 @@ void riscv_init(riscv *r) {
   }
   r->pc = 0;
   r->ri = 0;
-  r->sp = 0x3ffc;
-  r->gp = 0x1800;
+  r->reg[2] = 0x3ffc; // set stack pointer
+  r->reg[3] = 0x1800; // set global pointer
 }
 
 void riscv_init_text_data(riscv *r, char *text, size_t text_size, char *data, size_t data_size) {
@@ -530,7 +530,7 @@ void execute(riscv *r, ifields i) {
     ecall(r);
     break;
   default:
-    printf("Unknown opcode: 0x%x\n", i.op);
+    printf("(0x%08x) Unknown opcode: 0x%x (0x%08x)\n", r->pc-4, i.op, r->ri);
     break;
   }
 }

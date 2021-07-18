@@ -17,8 +17,6 @@ typedef struct riscv {
   int32_t reg[NREG];
   uint32_t pc;
   uint32_t ri;
-  uint32_t gp;
-  uint32_t sp;
 } riscv;
 
 void riscv_init(riscv *r);
