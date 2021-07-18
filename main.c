@@ -9,9 +9,9 @@
 #define WIDTH 128
 #define HEIGHT 128
 
-#define SCREEN_START 0x4000
+#define SCREEN_START 0x5000
 
-#define TICK 1
+#define TICK 10
 
 size_t read_file(char *filename, char arr[], size_t size) {
   FILE *file = fopen(filename, "rb");
