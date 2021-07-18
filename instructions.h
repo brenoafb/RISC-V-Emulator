@@ -28,17 +28,17 @@ typedef enum OPCODE {
 		     ECALL = 0x73                 // system call                      (IType)
 } OPCODE;
 
-typedef enum FUNCT3 { BEQ3=0, BNE3=01, BLT3=04, BGE3=05, BLTU3=0x06, BGEU3=07,    // branches 
+typedef enum FUNCT3 { BEQ3=0, BNE3=01, BLT3=04, BGE3=05, BLTU3=0x06, BGEU3=07,    // branches
 		      LB3=0, LH3=01, LW3=02, LBU3=04, LHU3=05,                    // loads
 		      SB3=0, SH3=01, SW3=02,                                      // stores
-		      ADDSUB3=0, SLL3=01, SLT3=02, STLU3=03,                      // arithmetic logic w/
+		      ADDSUBMUL3=0, SLL3=01, SLT3=02, STLU3=03,                   // arithmetic logic w/
 		      XOR3=04, SR3=05, OR3=06, AND3=07,                           // registers
 		      ADDI3=0, ORI3=06, SLTI3=02, XORI3=04, ANDI3=07,             // arithmetic logic w/
 		      SLTIU=03, SLLI3=01, SRI3=05                                 // immediate
 } FUNCT3;
 
 typedef enum FUNCT7 {
-		     ADD7=0, SUB7=0x20, SRA7=0x20, SRL7=0, SRLI7=0x00, SRAI7=0x20
+		     ADD7=0, SUB7=0x20, MULDIV7=1, SRA7=0x20, SRL7=0, SRLI7=0x00, SRAI7=0x20
 } FUNCT7;
 
 
@@ -73,11 +73,11 @@ typedef struct ifields {
   OPCODE op;
   FUNCT3 f3;
   FUNCT7 f7;
-  
+
   uint8_t rd;
   uint8_t rs1;
   uint8_t rs2;
-  
+
   uint8_t shamt;
   int32_t imm12_i;
   int32_t imm12_s;

@@ -48,9 +48,9 @@ int32_t get_imm12_s(int32_t instruction) {
 }
 
 int32_t get_imm13(int32_t instruction) {
-  int32_t bit11 = (instruction & (1 << 7)) >> 7; 
+  int32_t bit11 = (instruction & (1 << 7)) >> 7;
   int32_t bit12 = (instruction & (1 << 31)) >> 31;
-  int32_t lo = (instruction & (0xf << 8)) >> 8;    
+  int32_t lo = (instruction & (0xf << 8)) >> 8;
   int32_t up = (instruction & (0x3f << 25)) >> 25;
 
   return (bit12 << 12) + (bit11 << 11) + (up << 5) + (lo << 1);
@@ -89,7 +89,7 @@ ifields decode_instruction(int32_t instruction) {
   i.imm13 = get_imm13(instruction);
   i.imm20_u = get_imm20_u(instruction);
   i.imm21 = get_imm21(instruction);
-  
+
   return i;
 }
 

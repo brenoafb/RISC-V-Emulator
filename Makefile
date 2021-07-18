@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-g -Wall -Wextra
+CFLAGS=-g -Wall -Wextra -lSDL2
 DEGS=instructions.h riscv.h
 OBJ=instructions.o riscv.o
 

@@ -86,6 +86,11 @@ void addi(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i) {
   if (VERBOSE) printf("addi x%d, x%d, 0x%x\n", rd, rs1, imm12_i);
 }
 
+void mul(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2) {
+  r->breg[rd] = r->breg[rs1] * r->breg[rs2];
+  if (VERBOSE) printf("add x%d, x%d, x%d\n", rd, rs1, rs2);
+}
+
 void and(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2) {
   r->breg[rd] = r->breg[rs1] & r->breg[rs2];
   if (VERBOSE) printf("and x%d, x%d, x%d\n", rd, rs1, rs2);
@@ -148,6 +153,10 @@ void ecall(riscv *r) {
   case 4:
     // print string at a0 = x10
     printf("%s", (char *) &(r->mem[r->breg[10]])); // address is in bytes
+    break;
+  case 5:
+    // read int
+    scanf("%d", &r->breg[10]);
     break;
   case 10:
     // exit
@@ -423,13 +432,20 @@ void ilatype(riscv *r, struct ifields i) {
 
 void regtype(riscv *r, struct ifields i) {
   switch (i.f3) {
-  case ADDSUB3:
-    if (i.f7 == ADD7) {
-      add(r, i.rd, i.rs1, i.rs2);
-    } else if (i.f7 == SUB7) {
-      sub(r, i.rd, i.rs1, i.rs2);
-    } else {
-      printf("Unknown RegType f3, f7: 0x%x, 0x%x\n", i.f3, i.f7);
+  case ADDSUBMUL3:
+    switch (i.f7) {
+      case ADD7:
+        add(r, i.rd, i.rs1, i.rs2);
+        break;
+      case SUB7:
+        sub(r, i.rd, i.rs1, i.rs2);
+        break;
+      case MULDIV7:
+        mul(r, i.rd, i.rs1, i.rs2);
+        break;
+      default:
+        printf("(0x%08x) Unknown RegType f3, f7: 0x%x, 0x%x\n", r->pc-4, i.f3, i.f7);
+        break;
     }
     break;
 
@@ -450,12 +466,16 @@ void regtype(riscv *r, struct ifields i) {
     break;
 
   case SR3:
-    if (i.f7 == SRA7) {
+    switch (i.f7) {
+      case SRA7:
       srl(r, i.rd, i.rs1, i.rs2);
-    } else if (i.f7 == SRL7) {
+      break;
+      case SRL7:
       srl(r, i.rd, i.rs1, i.rs2);
-    } else {
-      printf("Unknown RegType f3, f7: 0x%x, 0x%x\n", i.f3, i.f7);
+      break;
+      default:
+      printf("(0x%08x) Unknown RegType f3, f7: 0x%x, 0x%x\n", r->pc-4, i.f3, i.f7);
+      break;
     }
     break;
 

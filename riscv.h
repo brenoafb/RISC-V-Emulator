@@ -57,6 +57,8 @@ void add(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
 
 void addi(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i);
 
+void mul(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
+
 void and(riscv *r, uint8_t rd, uint8_t rs1, uint8_t rs2);
 
 void andi(riscv *r, uint8_t rd, uint8_t rs1, int32_t imm12_i);
