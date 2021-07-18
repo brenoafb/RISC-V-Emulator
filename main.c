@@ -9,9 +9,8 @@
 #define HEIGHT 128
 
 #define SCREEN_START 0x3000
-#define SCREEN_END   0x7000
 
-#define TICK 500
+#define TICK 1000
 
 size_t read_file(char *filename, char arr[], size_t size) {
   FILE *file = fopen(filename, "rb");
@@ -63,12 +62,16 @@ void draw_screen(uint8_t *buffer, SDL_Renderer *renderer) {
   for (int i = 0; i < WIDTH*HEIGHT; i++) {
     int x = i % HEIGHT;
     int y = i / WIDTH;
-    int value = buffer[SCREEN_START + i];
-    if (value == 0) {
-      SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    } else {
-      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    }
+    uint8_t pixel = buffer[SCREEN_START+i];
+    /*
+      Bit    7  6  5  4  3  2  1  0
+      Data   R  R  R  G  G  G  B  B
+    */
+    int r = (0xff * (pixel >> 5)) / 0x7;
+    int g = (0xff * ((pixel >> 2) & 0x7)) / 0x7;
+    int b = (0xff * (pixel & 0x3)) / 0x3;
+    // printf("0x%02x (%d, %d, %d)\n", pixel, r, g, b);
+    SDL_SetRenderDrawColor(renderer, r, g, b, 255);
     SDL_RenderDrawPoint(renderer, x, y);
   }
   SDL_RenderPresent(renderer);
@@ -136,6 +139,7 @@ int main(int argc, char *argv[]) {
 
   SDL_DestroyWindow(window);
   SDL_Quit();
+  riscv_deinit(&r);
 
   return 0;
 }

@@ -1,7 +1,7 @@
 #ifndef INSTRUCTIONS_H
 #define INSTRUCTIONS_H
 
-#include "riscv.h"
+#include <stdint.h>
 
 #define F0M 0x7f
 #define F1M (0x1f << 7)

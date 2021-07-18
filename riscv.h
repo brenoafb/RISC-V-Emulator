@@ -7,14 +7,14 @@
 #include <string.h>
 #include "instructions.h"
 #define NREG 32
-#define MEMSIZE 0x8000
+#define MEMSIZE 0x16000
 #define DATASTART 0x2000
 #define VERBOSE 0
 #define DUMP 0
 
 typedef struct riscv {
-  uint8_t mem[MEMSIZE];
-  int32_t breg[NREG];
+  uint8_t *mem;
+  int32_t reg[NREG];
   uint32_t pc;
   uint32_t ri;
   uint32_t gp;
@@ -24,6 +24,8 @@ typedef struct riscv {
 void riscv_init(riscv *r);
 
 void riscv_init_text_data(riscv *r, char *text, size_t text_size, char *data, size_t data_size);
+
+void riscv_deinit(riscv *r);
 
 void riscv_exit(riscv *r, int exit_code);
 
