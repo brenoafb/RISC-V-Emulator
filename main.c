@@ -3,14 +3,15 @@
 #include <SDL2/SDL.h>
 #include "riscv.h"
 #include "instructions.h"
+#include "screen.h"
 
 #define BUFSIZE 4096
 #define WIDTH 128
 #define HEIGHT 128
 
-#define SCREEN_START 0x3000
+#define SCREEN_START 0x4000
 
-#define TICK 1000
+#define TICK 1
 
 size_t read_file(char *filename, char arr[], size_t size) {
   FILE *file = fopen(filename, "rb");
@@ -32,50 +33,6 @@ size_t read_file(char *filename, char arr[], size_t size) {
   return fread(arr, sizeof(char), size, file);
 }
 
-int setup_screen(SDL_Window *window, SDL_Renderer *renderer) {
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    printf("SDL could not be initialized. SDL_Error: %s\n", SDL_GetError());
-    return 0;
-  }
-
-  SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &window, &renderer);
-
-
-  if (window == NULL) {
-    printf("Window could not be created. SDL_Error: %s\n", SDL_GetError());
-    return 0;
-  }
-
-  if (renderer == NULL) {
-    printf("Window could not be created. SDL_Error: %s\n", SDL_GetError());
-    return 0;
-  }
-
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-  SDL_RenderClear(renderer);
-  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
-  return 1;
-}
-
-void draw_screen(uint8_t *buffer, SDL_Renderer *renderer) {
-  for (int i = 0; i < WIDTH*HEIGHT; i++) {
-    int x = i % HEIGHT;
-    int y = i / WIDTH;
-    uint8_t pixel = buffer[SCREEN_START+i];
-    /*
-      Bit    7  6  5  4  3  2  1  0
-      Data   R  R  R  G  G  G  B  B
-    */
-    int r = (0xff * (pixel >> 5)) / 0x7;
-    int g = (0xff * ((pixel >> 2) & 0x7)) / 0x7;
-    int b = (0xff * (pixel & 0x3)) / 0x3;
-    // printf("0x%02x (%d, %d, %d)\n", pixel, r, g, b);
-    SDL_SetRenderDrawColor(renderer, r, g, b, 255);
-    SDL_RenderDrawPoint(renderer, x, y);
-  }
-  SDL_RenderPresent(renderer);
-}
 
 int main(int argc, char *argv[]) {
   if (argc < 3) {
@@ -100,36 +57,14 @@ int main(int argc, char *argv[]) {
   SDL_Renderer *renderer = NULL;
   SDL_Event event;
 
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    printf("SDL could not be initialized. SDL_Error: %s\n", SDL_GetError());
+  if (!setup_screen(&window, &renderer, WIDTH, HEIGHT)) {
     return 0;
   }
-
-  SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &window, &renderer);
-
-
-  if (window == NULL) {
-    printf("Window could not be created. SDL_Error: %s\n", SDL_GetError());
-    return 0;
-  }
-
-  if (renderer == NULL) {
-    printf("Window could not be created. SDL_Error: %s\n", SDL_GetError());
-    return 0;
-  }
-
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-  SDL_RenderClear(renderer);
-  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
-  // if (!setup_screen(window, renderer)) {
-  //   return 0;
-  // }
 
   int counter = 0;
   while (cycle(&r)) {
     if (counter % TICK == 0) {
-      draw_screen(r.mem, renderer);
+      draw_screen(r.mem + SCREEN_START, renderer, WIDTH, HEIGHT);
     }
     if (SDL_PollEvent(&event) && event.type == SDL_QUIT) {
       break;
